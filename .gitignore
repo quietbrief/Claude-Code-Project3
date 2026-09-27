@@ -1,0 +1,8 @@
+FakeCall.xcodeproj/
+DerivedData/
+build/
+xcuserdata/
+.DS_Store
+iOS/Info.plist
+Watch/Info.plist
+WatchWidgets/Info.plist

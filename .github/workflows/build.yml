@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate
+      - name: Build iOS app with embedded watch app
+        run: |
+          set -o pipefail
+          xcodebuild -project FakeCall.xcodeproj -scheme FakeCall \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build | tail -n 80
+      - name: Build watch app
+        run: |
+          set -o pipefail
+          xcodebuild -project FakeCall.xcodeproj -scheme FakeCallWatch \
+            -destination 'generic/platform=watchOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build | tail -n 80
+      - name: Show bundle layout
+        run: find ~/Library/Developer/Xcode/DerivedData -path '*Debug-iphonesimulator/FakeCall.app*' -maxdepth 8 -name '*.app' -o -name '*.appex' | head -n 20
